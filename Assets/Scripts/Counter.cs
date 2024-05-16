@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -8,36 +7,28 @@ using UnityEngine;
 public class Counter : MonoBehaviour
 {
     [SerializeField] private float _time;
+    [SerializeField] private Clicker _clicker;
 
-    private int _counter;
+    private int _count;
     private TextMeshProUGUI _textMeshPro;
     private bool _isPressed = false;
-
-    public event Action ClickButtom;
+    private Coroutine _coroutine;
 
     private void Start()
     {
-        _counter = 0;
+        _count = 0;
         _textMeshPro = GetComponent<TextMeshProUGUI>();
-        _textMeshPro.text = _counter.ToString();
-    }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            ClickButtom?.Invoke();
-        }
+        _textMeshPro.text = _count.ToString();
     }
 
     private void OnEnable()
     {
-        ClickButtom += ButtonPressed;
+        _clicker.ClickedButtom += ButtonPressed;
     }
 
     private void OnDisable()
     {
-        ClickButtom -= ButtonPressed;
+        _clicker.ClickedButtom -= ButtonPressed;
     }
 
     private void ButtonPressed()
@@ -46,20 +37,22 @@ public class Counter : MonoBehaviour
 
         if (_isPressed)
         {
-            StartCoroutine(CounterCorutine());
+            _coroutine = StartCoroutine(IncreaseNumberCoroutine());
         }
         else
         {
-            StopAllCoroutines();
+            StopCoroutine(_coroutine);
         }
     }
 
-    private IEnumerator CounterCorutine()
+    private IEnumerator IncreaseNumberCoroutine()
     {
-        while (true)
+        bool isWork = true;
+
+        while (isWork)
         {
-            _counter++;
-            _textMeshPro.text = _counter.ToString();
+            _count++;
+            _textMeshPro.text = _count.ToString();
 
             yield return new WaitForSecondsRealtime(_time);
         }
